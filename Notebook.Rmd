@@ -1,0 +1,897 @@
+---
+title: "Notebook"
+author: "David-Alexandre Brassard"
+date: "23/02/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ISLR)
+library(MASS)
+```
+
+# Introduction to Statistical Learning
+
+## Introduction 
+We generally divided tools between: 
+1. Supervised learning : Building a model to predict OUTPUT from INPUTS
+2. Unsupervised learning : INPUTs but no supervising output
+
+### Datesets in the book
+
+Packages:
+
+1. ISLR
+2. MASS
+
+List of datasets: 
+
+- **Auto** :  Gas mileage, horsepower, and other information for cars.
+
+- **Boston** : Housing values and other information about Boston suburbs.
+
+- **Caravan** :  Information about individuals offered caravan insurance.
+
+- **Carseats**: Information about car seat sales in 400 stores.
+
+- **College** :  Demographic characteristics, tuition, and more for USA colleges.
+
+- **Default**: Customer default records for a credit card company.
+
+- **Hitters**: Records and salaries for baseball players.
+
+- **Khan**: Gene expression measurements for four cancer types.
+
+- **NCI60**: Gene expression measurements for 64 cancer cell lines.
+
+- **OJ** Sales information for Citrus Hill and Minute Maid orange juice.
+
+- **Portfolio**: Past values of financial assets, for use in portfolio allocation.
+
+- **Smarket**: Daily percentage returns for S&P 500 over a 5-year period.
+
+- **USArrests**: Crime statistics per 100,000 residents in 50 states of USA.
+
+- **Wage Income**: survey data for males in central Atlantic region of USA.
+
+- **Weekly**: 1,089 weekly stock market returns for 21 years.
+
+## Chapter 2
+
+. Inputs-Predictors-Independant variables-Features-Variables(**X**)
+
+. Outputs - response-dependant variable (**Y**)
+\[
+  Y = f(X) + \epsilon
+\]
+
+where $\epsilon$ = error term and f(X) denotes the systematic information
+that X provides about Y
+
+Two main reason to try and find F : **Prediction** and **Inference**
+
+### Prediction 
+
+For prediction purposes, the function estimates is a black box because we are not 
+really concerned about the exact, only its accuracy. 
+
+Accuracy of prediction model relies on two elements : 
+
+- Reducible error: Error that can be reduced using a better fitting model
+
+- Irreducible error: Error introduced by the error term which implied variability
+for Y
+
+$\epsilon$ may always contain unmeasured variables that have a impact on Y and it can 
+also contain unmeasure variation. 
+
+\[
+  E(Y-\hat{Y})^2 = [f(X)-\hat{f}(Y)]^2 + Var(\epsilon)
+\]
+
+The first element is the reducible error meanwhile the second is the irreducible. 
+The book will focus on the reducible error as the irreducible offer a upper bound to prediction 
+accuracy.
+
+### Inference 
+
+The process by which we try to understand how Y is affected by X. As a extension, 
+we try to estimate how Y reacts when X changes. In that case, $\hat{f}$ cannot
+be treated as a black box because we need to know the exact form. 
+
+Historically, most methods have focus on linear form for $\hat{f}$ but it is important 
+to check if that applies to our input-output relation. 
+
+### Estimating $f$
+
+Find a function $\hat{f}$ such that $Y ≈ \hat{f}(X)$ for any observation ($X, Y$)
+
+### Parametrics Methods 
+
+Uses a two-step model-based approach : 
+
+1. Make assumptions about function form of $\hat{f}$
+
+2. Procedure to uses the training dat to *train or fit* the data
+
+Parametric methods reduced the problem of estimating f down to one of estimating 
+a set of parameters. 
+
+**+** Much easier to estimate parameters than fit a arbitrary function f. 
+
+**-** Choosing a form that doens match the true unknow form of $f$
+
+In order to reduce issues, one can fit a flexible model on the data. However, it
+requires estimating a greater number of parameters and could lead to overfitting. 
+
+**Overfitting** : Following the error-noise too closely
+
+### Non-parametrics Methods 
+
+No assumption on the functional form of $f$. Instead, they try to find a $\hat{f}$
+that gets as close to the data points as possible
+
+**+** No assumption on the form of $f$. 
+
+**-** Reuires a very large number of observations for a accurate estimate of $f$, Risk of overfitting
+
+### Trade-off between Prediction Accuracy and Model Interpretability
+
+High interpretability is associated to models that are less flexible and the 
+opposite is true meaning that Very flexibile model are less interpretable. 
+
+However, because of overfitting, more flexible methods are not necesseraly better
+for predictions
+
+### Supervised vs unsupervised 
+
+Unsupervised : When there are no response variables that can supervise our analysis
+
+In those cases, we study the relationships betweens the variables or between the 
+observations therefor leading to *cluser analysis* or *clustering*. 
+
+Clustering determine "group memberships" for observations or variables
+
+*Semi-supervised learning* : Hybrid when we have response (output) variable
+for some of the observations but not all of them
+
+### Regression vs classification
+
+*Regression* : quantitative response variable
+*Classification* : qualititative(categorical) response variable 
+
+Logistic regression can be used for classification problem. But it does estimate 
+class probabilities so it is still thought of as a regression method.
+
+The qualitative or quantitative nature of predictors is less important. However, they
+need to be coded properly for the chose method (mainly for regression)
+
+## Model Accuracy
+
+No model dominates all others for all datasets. Choosing the best model for 
+the studied data is one of the most challenging parts of statistical learning. 
+
+### Quality of fit 
+
+Measures of how well the model's prediction fit observed data. For regression, we use 
+the *mean squarred error* which has to be minimized. 
+
+
+\[
+  MSE = \frac{1}{n} \sum_{i=1}^n(y_{i}-\hat{f}(x_{i}))^2
+\]
+
+The goal is to minimize *mean quarred errors* but we can't simply estimate on the 
+training data. It seems obvious that we do not really care if he model is close to the 
+training data. We ould muhc rather have a model that has low *mean squarred erros* for 
+new data (*test data*). 
+
+Very often, the model chosen by statistical methods already selects the parameters
+so as to minimize the training set MSE. Inherently, *training MSE* will be small but 
+this does not mean that *test MSE* will be small too. 
+
+
+By construction, more flexible methods will produce lower *training MSE*. That conclusion 
+cannot be extrapolated to the *test MSE* because of **overfitting** once more. That U curve 
+of *test MSE* with increasing flexibility is a fundamental proporty of statistical learning
+
+**Overfitting** : picking up patterns that are caused by random chance and is 
+therefore not replicated in the data. Associated to a model that is too flexible
+
+The goal of quality of fit is to determine the minimum point of the U-shape curve 
+of *test MSE* with regards to model flexibility
+
+### Bias-Variance Trade-Off
+
+*Test MSE* can be decomposed into three fundamental qualities : 
+
+1. Variance : amount by which $\hat{f}$ would change with different training set. More flexible
+models have higher variance.
+
+2. Bias : error introduced by approximating complicated relations with simple model. More flexible
+models result in less bias
+
+3. Variance of the error term (irreductible error)
+\[
+  E(y_{0}-\hat{f}(x_{0}))^2 = Var(\hat{f}(x_{0}))+[Bias(\hat{f}(x_{0}))]^2 +Var(\epsilon)
+\]
+
+In order to minimize *test MSE*, we have to selec *low variance* and *low bias* models. 
+
+*Bias* tends to reduce *faster* than Variance increases resulting in a U-Shape 
+
+Its called a tradeoff because it is fairly easy to have : 
+
+1. High variance, low bias : drawing a lines tha goes throught every point
+2. Low variance, high biais : horizontal lines for regression
+
+Cross-validation is a way of estimate test MCE with training data
+
+### Classification setting 
+
+In a classification setting, we use the training/testing *error rate* which is the fraction
+of incorrect classification. One again we try to minimize it. 
+
+\[
+  \frac{1}{n} \sum_{i=1}^nI(y_{i}!=\hat{y_{i}}))
+\]
+
+$I$ is a indicator variable that equal 1 if $y_{i}!=\hat{y_{i}}$ and $0$ otherwise.
+
+**Bayes Classifier** 
+*Test error rare* is minimized by a classifier that assign each observation to the most likely
+class. The *Bayes clasifier* is equivalent to the conditionnal probability
+\[
+  Pr(Y=j|X=x_{0})
+\]
+
+When there is only 2 class, we predict positively when $Pr(Y=j|X=x_{0})>0.5$.When it is 
+equal to 0,5, we are at the *Bayesian decision boundary*
+
+Bayes error rate is always non-null because observations always overlap.
+
+**K-Nearest Neighbors**
+In theory, we would like to use the Bayes Classifier but we do not know 
+the condition probably of Y know X. Many approaches attemps to estimation 
+the conditional probability of Y given X and classify with highest estimated probability. 
+
+*KNN classifier*: 
+
+1. Identify K points in training data that are closest to $x_{o}$ 
+
+2. Estimate conditional probability for class $j$ 
+
+3. Classifies the test observation to the class with the largest probability
+
+\[
+  Pr(Y=j|X=x_{0}) = \frac{1}{K} \sum_{i \in N_{0}}I(y_{i}=j)
+\]
+
+The choice of K has a drastic effect on the KNN classifier obtained. 
+
+- Low K = low bias, high variance (overfitting with 1-1 match)
+
+- High K = high bias, low variance (decision boundary close to linear)
+
+The bias-variance trade-off is observed as well and the *test error rate* follows
+a U-shaped curve. Reaching a minimum while increasing flexibility and strating to increase
+again after that minimum.
+
+# Chapter 3 : Linear Regression
+
+Fancier or newer approach are oven generalizations or extensions of linear regression. 
+Even if the relationship between output and input is not linear, it might 
+be possible to transform the predictors so that lienar regression can be used. 
+
+**Interaction effect** : When $x_1 * x_2$ has a significant impact even when $x_1$ and 
+$x_2$ are taken into account
+
+## 3.1. Simple Linear Regression
+
+Measuring closeness to the $n$ is done with *least suqare* criterion aka minimizing 
+the sum of squared errors (here called RSS : residual sum of error). RSS is minimized 
+accross the observation to determine the coefficients.
+
+\[
+  RSS = \sum_{i=1}^n(y_i-\hat{y_i})^2 
+\]
+
+Error term is a catch-all for what we miss with the simple model: 
+
+- Relationship might not be linear
+
+- Might be missing variable
+
+- Might be measurements error
+
+- etc. 
+
+Least square line (model) is used to approximate the population regression line 
+using a sample. 
+
+Coefficients estimated are unbiaised meaning that if N is big enought $\hat{\mu}$ is 
+gonna be equal to $\mu$. Unbiaised means it does not systematically over or 
+under estimated the true parameter. 
+
+\[
+  Var(\hat{\mu}) = SE(\hat{\mu})^2=\frac{\sigma^2}{n} 
+\]
+
+Standard error will tell us on average how far the estimated parameters are from the 
+true one. 
+
+When X is more spread out, we have more *levage* to estimate a slope. 
+
+Standard erros are derived from RSS and they are used to compute confidence intervals. 
+
+$95$% confidente interval = $\hat{\beta} + 2*SE(\hat{\beta})$
+
+Most common hypothesis test is the null hypotheses: No relationship between X and 
+Y. T-statistics measure the number of standard deviation that $\hat{\beta}$ is from 0 (Coefficient/standard error). WE then compute the p value which is the probability of $\beta=0$. 
+
+- If it is low, its unlikely to observe the relationship between Y and X due to chance. The opposite is true. 
+
+In fact, p-value show the significance level of a parameter. 
+
+- p = 0,05 is equivalent to t-statistic = 2 
+- p = 0,01 is equivalent to t-statistic = 2,75 
+
+Accuracy L extent to which the model fits the data. In linear regression, residual standard error (RSE)
+and $R^2$ are used. 
+
+**RSE** 
+
+RSE is the estimation of the standard deviation of $\epsilon$. It reflects 
+the approximate of deviation from true regression line for any observations (LACK OF FIT). 
+Absolute measure of lack of fit based on the units of Y. 
+
+**$R^2$**
+
+OFfers a relative measure of fit expressed in proportion- the proportion of variace
+explained-. Value if between 0 and 1 and independent of Y scale. 
+
+
+In simple regression setting $R^2$ is equivalent to squared correlation between Y and X.
+
+$R^2$ always increases when you add variables overway we can overfit if we explained too much of the variace. 
+Once again we'd be explaining part of the error termn. 
+
+## 3.2. Multiple Linear Regression
+
+$/beta$ interpretation : Impact of X on Y while mainting other predictors fixed
+
+*F-Statistics* : Test the hypothesis that all predictors are equals to $0$ 
+
+When *F-Statistics* is far from 1, then the predictor are non null. A model could be significant
+even if some of the predictors are not. 
+
+When $p$ is very high, even if the null hypothesis is true, some predictors could be 
+significant by chance. But F statistics rang true even with a high number of predictor.
+
+If $p>n$ then F statistics or linear regression that manner cannot be used, forward 
+selection can be used instead
+
+**Variable selection**
+
+When P is high, individual P values are not of much help because they could be linked 
+as of chance.  
+
+Statistics used to judge the quality of the model : 
+
+- Mallow's C 
+
+- Akaike Information Criterion (AIC)
+
+- Bayesian information criterion (BIC)
+
+- Ajusted $R^2$
+
+Determining which predictors to include in the model as a subset is often 
+complicated because there are $2^p$ possible models to test which renders standard
+computation too complex.
+
+Approach to determine the right model : 
+
+- *Forward selection* : Begin with null model, fit p simple linear regressions and 
+add predictors one by one until lowest RSS is attained
+
+- *Backward selection* : Starting will all predictors, they are removed one by one 
+when p-values are higher than a certain threshold. Cant be used if $p>n$
+
+- *Mixed selection* : Combination of forward and backward. Starting with the null model
+we add predictors one by one but remove variables that becomes insignificant as the model grows bigger. 
+It removes the greedyness from forward selection. 
+
+**$R^2$** 
+
+$R^2$ is equivalent to $Cor(Y,\hat{Y})^2$. The use of $R^2$ is often problematic 
+because it increases when predictors are added to the model. 
+
+**Prediction**
+Predictions are straight forward one the model was fitted. $Model bias$ is always possible 
+because multiple regression are the best linear approximation to the true relationship
+between output-input. Prediction interval are always larger than confidence interval. 
+
+**Qualitative Predictors**
+
+- A qualitative predictor With $2$ levels is included in a regression as a dummy variable.
+
+- For $n$ levels, we created $n-1$ dummy, The level with no dummy variable 
+is know as the baseline level. 
+
+### Extension of the linear ### 
+
+The two basic assumptions of linear regression are than the relationship 
+between predictors and variable are : 
+
+1. Additive : It assume that the effect of $X$ of $Y$ is independant of other predictors
+
+2. Linear : Change in one-unit of $X$ always has the same impact on $Y 
+
+**Removing the Additive Assumption** 
+
+Including an interaction term $X_1X_2$ can take into account the synergy between 
+both predictors. Since changing $X_2$ will change the impact of $X_1$ on Y, the 
+additive assumption is removed. 
+
+*Hierachical principle* states that if an interection terms is in a model then 
+the main effects should also we in the model even if the coefficient seem insgnificant. 
+Leaving would sort of alliviate what we are trying to accomplish in regards to interaction 
+
+**Non linear relationships**
+
+Simplest way is to incorpore transforme versions of the predictors in the model 
+($X^2$). On the plane of $X^2$ we are fitting a non linear function in a linea rmodel. This approach
+is know as *Polynomial regression* since we have included polynomial functions of the predictors
+
+### Potential problems ### 
+
+1. **Non linearity of the response-predictor relationships**
+
+If relationships is not linear, all conclusions are suspect and prediction 
+accuracy cant be significantly reduced. 
+
+Residual plots are usefull to identify non-linearity, which are a graph of $\epsilon_i$ 
+($y_i-\hat{y_i}$) versus $\hat{y_i}$. The pattern (smooth_line) in the graph helps us see non linearity as ther should be no pattern in the residuals. 
+
+Non-linear transformations : $\log(x)$, $\sqrt{X}$,$X^2$
+
+2. **Correlation of Error Terms**
+
+Assumption that $\epsilon_i$ offers no information on $\epsilon_{i+1}$. If it does not stand, 
+we have have more confidence than we should in hte model and its parameter. 
+
+Such correaltion occurs in times series. When plotting residual across time, we 
+may see that error values might close to the adjacent errors in time. It might occur 
+outside of time series when we have unexplained similarities between observations. 
+
+3. **Non-constant Variance of Error Terms (heteroscadasticity)** 
+
+In linear regression, error terms have a constant variance ($\sigma^2$) and confidence interval 
+rely on that assumption. 
+
+Heteroscedasticity can be identified with funnel shape in residual plot. IT is often
+related to higher error terms associated with higher responses. Concave function 
+($log Y$ or $\sqrt{Y}$) can shrink heteroscedasticity. 
+
+If observations are diffetenly weighted therefor impacting variance, 
+weghted least squares is a simple solution to fix this. 
+
+4. **Outliers**
+
+Outliers are $Y$ values that are unexplained by the predictors. 
+It is typical for outliers in response to have little effect on on least square. 
+
+Residual plots can be used to identify outliers. It can sometimes be hard to decide what the residual threshold is to determine an outlier.
+
+Studentized errors ($\frac{\epsilon_i}{\sigma}$) are often used to drops observations whose residual is greater than 3.  
+
+Removing them from the model to improve variance is always a tricky thing. 
+
+5. **High leverage point** 
+
+Observations that have an unusual value for predictor $x_i$. As opposed to outliers, high leverage point can have sizable impact on the regression line. Those points can invalidate the entire fit. 
+
+Spotting those points can be complicated in multiple regression. An observation can have usual value of $X_1$ and $X_2$ but have an unsual combination of both. Plotting can only identify these point for regression with 2 predictors. 
+
+Leverage statistics ($h_i$) can be used. It is between $\frac{1}{2}$ and $1$. Higher leverage statistics indicate leverage. We can 
+visualize leverage vs studentisez residuals to spot those observations. This approach can help spot both outliers and high leverage point. If the residuals is far from the average, it is a outlier and if the leverage is high, it is an high leverage point. 
+
+6. **Collinearity**
+
+When two or more predictors are closely related. Correlation matrix of predictors can help detect collinearity. However, correlation matrix can't detect correlation between 3 or more variables (*Multicollinearity*). 
+
+To assess for *multicollinearirty*, we compute the variance inflation factor (**VIF**). VIF is the ratio of variance for $\hat{\beta}$ when fitting the full model divided by the variance of $\hat{\beta}$ when fitting the model with one predictor. VIF's minimum is 1, it is often problematic when it is over 5 or 10. 
+
+2 solutions for multicollinearirty : 
+
+1. Drop one of the problematic variables - usually done without much comprise to regression fit. As is obvious, the information is contained within a other variables. 
+
+2. Combine collinerar variables together in a single predictor
+
+### 3.5 Comparison of Linear Regression with K-Nearest Neighbors
+
+One of the simplest and best know non-parametric methods
+
+KNN regression is closely related to KNN classifier. KNN regression estimate $f(x_o)$ using averaeges of training response represented by $N_0$. 
+
+\[
+  \hat{f}(x_o) = \frac{1}{K} \sum_{x_i \in N_0}y_i
+\]
+
+- When $K=1$, the fit is perfect (*overfitting*) and take the furm of a step function. 
+
+- When $K=9$, fit is still a step function but it averages over 9 observations
+
+Optimal value of $K$ dpends on *bias-variance tradeoff*. MEthods to estimate error rate can be used 
+to identify the optimal value of K in KNN regression. 
+
+Parametric $>$ Non-Parametric; if the true form of $f$ is close to a the *parametric form*. Non-parametric incurs a cost in variance that in this case if not offset by a reduction in bias since $f(x)$ is in fact linear. KNN perform better in terms of *MSE* when K is large.  
+
+The farther we are from linearity, the better KNN performs when compared to linear regression. With a little non linearity, KNN may only perform better if K is high enought but when it is highly non linear, KNN performs better for all values. In fact, *test MSE* does no vary much for KNN regression when non linearity is more pronounced. The opposite is tru for linear regression. 
+
+One thing to keep in mind is that KNN is not suited for high dimensions situations. It can perform worse than linear regression even if the relationship between data is non linear. This is associated to the exponential reduction of sample size when one dimension is added (*curse of dimensionality*). 
+
+Interestingly, linear regression performance is not altered by adding predictors. 
+
+- KNN : Non linear, low $p$, prediction
+
+- Linear regression : linear, high $p$, inference
+
+## R Lab 
+
+```{r include=FALSE}
+library(MASS)
+library(ISLR)
+library(ggplot2)
+library(car)
+
+attach(Boston) # Attaching a dataset, uses it by default
+
+```
+
+
+The regression labs uses old function from base package but it is still useful for basic understanding. 
+
+To fit a linear model on all data and get regression, summary, coefficients and confidence interval : 
+
+```{r}
+   
+lm.fit <- lm(medv~.,data=Boston) 
+summary(lm.fit)
+
+lm.fit$coefficient ; coef(lm.fit); confint(lm.fit)
+
+
+```
+We can plot results from the regression with the following commandts. The commands generate multiple graph : 
+
+1. Residuals vs fitted values : that can used to detect non linearity
+
+2. Standardized residulas vs Thoretical quantiles : detect non linearity, outliers
+
+3. Standardized residuls vs fitted vales : spotting outliers
+
+4. Standardized residuals vs leverage : spotting high levarage points
+
+```{r}
+plot(lm.fit)
+```
+
+With the estimated model, we can deter a few outliers based on their standardized residuls. Those outliers are not high leverage points, we can detect less than 5 of them. Furthermore it would seem the model has some non linearities. 
+
+
+
+We can update the model with : 
+
+```{r}
+lm.fit1=update (lm.fit , ∼.-age)
+```
+
+Interaction term and non linear transformation
+
+```{r}
+    summary (lm(medv~lstat *age ,data=Boston ))
+
+    lm.fit2 <- lm(medv~lstat)
+    lm.fit3 <- lm(medv~lstat+I(lstat^2))
+```
+
+Comparing two models with ANOVA. The null hypothesis is that both models fit the data equally well. The alternative hypothesis is that the the full model has a better fit.  
+
+```{r}
+   anova(lm.fit2,lm.fit3)
+   
+```
+
+Since $F$ is very high and $p-value$ is virutally 0. The null hypothesis can be rejected and we can conclude that the full model fits better.  
+
+To go further into  transformation, polynomial function can be used as well as log functions.
+
+```{r}
+lm.fit5=lm(medv∼poly(lstat ,5))
+lm.fit6=lm(medv∼log(rm),data=Boston )
+
+```
+
+R can generate dummy variables for qualitative predictors. IT will generate ($J-1$) dummy for qualiative predictors. The vector from-to can be used on formulas. 
+
+```{r}
+lm.fit =lm(Sales∼.+ Income :Advertising +Price :Age ,data=Carseats )
+```
+
+# Classification 
+
+Model for qualitative responses (categorical). Ofthe times, the method use 
+for classification first predict the probability of each response as the basic 
+for making the classification. 
+
+This chapter will cove 3 classifiers : 
+
+1. Logistic regression 
+
+2. linear discriminant analysis
+
+3. K-nearest neighors 
+
+## 4.2 Why not linear reg? 
+
+Linear regression can not be used on categorical response because it would imply
+that the responses are ordered and the difference between each level is similar. 
+There is no natural way to convert a qualitative response (with $>$ 2 levels) into a quantitative one.
+
+For binary responses, we could use linear regression as the coefficient would indeed 
+make sense. However, some of our predictions might be out of the $[0,1]$ interval. Classification 
+results would be similar to a linear discriminant analysis (LDA). 
+
+## 4.3 Logistic regression
+
+Logistic regression models the *probability* that $Y$ belongs to a particular category. Can be 
+writting as : 
+
+\[
+  Pr(Y=1|X)=p(x)
+\]
+
+We determine the threshold for response's probability (usually 0.5). Lower thresgold can 
+be chosen if one desires to be conservatice. 
+
+### Logistic model 
+
+The logistic is fit using *maximum likelyhood*. It will always produce a S-shaped curve. 
+Average fitted value might be the same as in a linear regression but distribution of probabilities make more sense. 
+
+Left-side of the following equation is thr odds. It can take any value from $0$ to $\infty$. If 1 out of 5 peoples default, the 
+odds are *1/4* ($\frac{0.2}{1-0.2}$) 
+
+\[
+  p(X)= \frac{e^{\beta_0+\beta_1X}}{1+e^{\beta_0+\beta_1X}}
+\]
+
+When using algebra, it is equivalent too: 
+
+\[
+  log(\frac{p(X)}{1-p(X)}) = \beta_0 +\beta_1X
+\]
+
+The interpretation of $\beta_1$ is the change in log odds that in increase of one
+unit of X brings. In other words, odds are multiplied by $e^{\beta_1}$. There are 
+therefor no straighline relationship between $p(X)$ and $X$. 
+
+Maximum likelyhood(ML) correspond to fitting $\hat{\beta_1}$ that makes sure that the 
+predicted probability is as close to 1 as possible for positive response and as close 
+to zero for null (or negative) responses. ML is a general approach used to fit many non-linear
+models, least suqares is a special case of ML. 
+
+Z-statistics are used to test if coefficient are different from 0. Intercept are of little 
+interest in logistic model, they are used to adjust the probabilities to the data. Qualitative variable can be used to fit a logistic regression. 
+
+2 class logistic model can be extented for response with more than 2 level by they 
+are not used often. Discriminant analysis is much more popular for multiple-class classification. 
+
+## 4.4 Linear Discriminant Analysis
+
+We model the distribution of predictors for each class of responses and then use Bayes theorem
+to flip there into estimated of conditionnal probability $P(Y=k|X=X)$. It assume that observations follow a normal distribution for each predictor across class of responses. The covariance matrix in each class K is assumed to the same meaning the the correlation between the predictors is similar in $K^{th}$ response class.
+
+Better when : 
+
+- Classes are well-seprated, parameter o flogistic regression are less stable
+
+- N is small and distribution of predictors is normal in each class, linear discriminant is more stable
+
+- We have more than 2 response classes. 
+
+Linear Discriminant analysis(LDA) approximate a Bayes classifier by plugging estimates for density function of predictors in K classes of response. LDA decision boundary, points where predictors could theorically either be one of the responses, is pretty close to bayes classifier is predictors are normally distributed in the class.
+
+Error rate is used to test model accuracy as per usual. There is a risk of overfitting
+when p is high and n is low.
+*
+*Confusion matrix* are use to display the info on the type of error. *Sensitivity* is the percentage of true Yes that are identified. *Specificity* is the percentage of False that are correctly identified. Certains type of classification might be more important that others.
+
+LDA utilize a threshold of 50% in the posterior probability to assign a response's class to a observation. It can be modified if we are concerned about the under/over prediction of our model. Modifying threshold has a cost in error rate since error rate is overall lowest at 0.5. 
+*Receiver operating characteristics*, which is a function of true postivie rate relative to false positive rate. Its area under the curse is to judge the quality of the classifier. A good hug has very high true positive rate and very low false falsu positive. So the area under the curve is close to 1. 
+
+### Quadratic Discriminant Analysis
+
+QDA lets each class K have its own covariance matrix so that observation follow a normal distribution with their variance relative to the class $k^{th}$ observations. 
+The decision boundary are quadratic as as opposed to a hyperplace with LDA 
+
+Why would LDA be better than QDA or vice-versa? 
+
+- Its once again a bias-variance trade-off. QDA requires estimating more parameters for the individual covariance matrix. So if $p$ is high and $n$ is low, this could be problematic. With lower parameters and linear assumption, LDA has less variance than QDA however, it could be bias if the covariance matrix for classes are indeed different. With large training set, QDA is preferred.
+
+## Comparison of classification methods
+
+1. Logistic regression 
+
+    i. Linear decision boundary
+    
+    ii. Outperforms LDA is the assumption for LDA are not met
+
+2. LDA
+
+    i. Linear decision boundary
+    
+    ii. Improvements over logistic when the assumption hold
+    
+    iii, Quadratic terms could be added to have a hybrid between LDA and QDA
+
+3. QDA 
+
+    i. Compromise between LDA and KNN
+    
+    ii. Cant represent not linear decision boundary
+    
+    iii. QDA > KNN if $n$ is low
+
+4. KNN classifier 
+
+    i. Non-parametric approach (no assumption made)
+    
+    ii. KNN > LDA & Logistic if decision boundary is not linear
+    
+    iii. Does not identify important predictos (bad for inference)
+
+## R Labs
+
+Correlation function lets us see that there is very little correlation between previous' day return and today's return. The only substantial correlation is between Year and Volume.
+```{r}
+library(ISLR)
+cor(Smarket[,-9])
+attach(Smarket)
+```
+
+We will try to fit logistic regression in order to predict the qualititave variable directions that is either "UP" or "Down". 
+
+Lag1 is the closest we get to a significant coefficiant. The negative coefficient suggest that the market is more likely to go in the opposite direction as it did yesterday. 
+
+With predict, we have to specified the typpe to get response probability. These are particularly close to 0.5 for every observation. Using a 0.5 threshold, we transform them into class values rather than probability. 
+
+```{r}
+glm.fit <-glm(Direction~Lag1+Lag2+Lag3+Lag4+Lag5+Volume,family=binomial,data=Smarket); summary(glm.fit)
+glm.probs <- predict(glm.fit,type="response")
+glm.probs[1:10]
+
+glm.pred=rep ("Down " ,1250)
+glm.pred[glm.probs >.5]=" Up"
+glm.pred[1:10]
+```
+
+Testing our accuracy on the training data, which is rather bizarre. we are right 52 % of the time. Only 2 percent better than a onlu Up vector would be in terms of accuracy. The training error rate is close to $48 %$ and with worse performance in the test data, we could assume that the model is no better than random guessing. 
+
+```{r}
+table(glm.pred,Direction) # Confusion matrix
+
+(507+145)/1250
+```
+
+To have train and test data, we will use 2001 to 2004 as train and 2005 as test. The error rate
+on the testing data(2005) is over 50 % (1-0.48 to be exact). It seems the model is 
+worse than random guesing. 
+```{r}
+train =(Year <2005)
+Smarket.2005= Smarket[!train ,]
+Direction.2005= Direction[!train]
+glm.fit <- glm(Direction~Lag1+Lag2+Lag3+Lag4+Lag5+Volume,data=Smarket,family="binomial",subset=train)
+glm.probs=predict(glm.fit,Smarket.2005,type="response")
+
+glm.pred=rep("Down",252)
+glm.pred[glm.probs>.5] <- "Up"
+table(glm.pred,Direction.2005)
+
+(77+44)/252
+```
+
+Let try to remove predictor that are not in relation with today's market direction and 
+see if our model is performing better than random guessing. This decreases the error rate to 
+0,44 meaning that the model is now better than random guessin by not by much. 
+
+```{r}
+glm.fit <- glm(Direction~Lag1+Lag2,data=Smarket,family="binomial",subset=train)
+glm.probs=predict(glm.fit,Smarket.2005,type="response")
+
+glm.pred=rep("Down",252)
+glm.pred[glm.probs>.5] <- "Up"
+table(glm.pred,Direction.2005)
+test_Error <- 1-(35+106)/252
+```
+
+### LDA 
+
+- Prior probability : indicates the percentage of each class of response (Up or Down). 
+
+- Group means : averages of coeffcient for each predictor and each class (4 coefficients here)
+
+
+
+```{r}
+library(MASS)
+
+lda.fit <- lda(Direction~Lag1+Lag2,data=Smarket,subset=train)
+lda.fit
+```
+
+We can plot the LDA fit, which will results in a distribution by class of the discriminants. 
+Predict return a list with three elments.
+
+1. Class = Lda prediction
+
+2. Posterior = posterior probability
+
+3. X = linear discriminants
+
+```{r}
+lda.pred=predict (lda.fit , Smarket.2005)
+lda.class =lda.pred$class
+table(lda.class,Direction.2005)
+lda.error.rate <- 1-(35+106)/252
+```
+
+If we apply 50 % threshold on posterior probability, we will recreate the predictions 
+contained in the prediction variables. 
+
+### QDA
+
+Syntax is similar to LDA, its part of the MASS library. Output contain group means but not the linear discriminants because QDA uses quadratic function of predictors. QDA is right 60 % of the time with the test data. There is a accuracy gain associated to the added variance of a more flexible model.  
+
+```{r}
+qda.fit=qda(Direction∼Lag1+Lag2 ,data=Smarket ,subset =train)
+qda.fit
+qda.class =predict(qda.fit ,Smarket.2005)$class 
+table(qda.class ,Direction.2005)
+
+1-(30+121)/252
+```
+
+### KNN 
+
+KNN function (*knn()*) fit the model and forms prediction with a single command. It requires 4 inputs : 
+
+1. Train data with predictors 
+
+2. Test data 
+
+3. Vector with Class values for training observations
+
+4. A vlue for K : number of nearest neighbors
+
+Seed must be set because the tie between two neighbors is broken up by chance. With K=1, it seems that the fit might be overly flexible. K=3 give the lowest error rate. 
+
+```{r}
+library (class)
+train.X=cbind(Lag1 ,Lag2)[train ,]
+test.X=cbind (Lag1 ,Lag2)[!train ,]
+train.Direction =Direction [train]
+
+set.seed (1)
+knn.pred=knn(train.X,test.X,train.Direction ,k=3)
+t <- table(knn.pred ,Direction.2005)
+
+1-(t[1,1]+t[2,2])/252
+
+```
+
+# Loved the introduction but the linear discriminant sections and the old command on R convinced me to get started on Applied predictive modeling
+
